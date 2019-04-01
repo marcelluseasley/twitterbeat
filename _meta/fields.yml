@@ -2,7 +2,7 @@
   title: twitterbeat
   description:
   fields:
-    - name: counter
+    - name: trends
       type: long
       required: true
       description: >
