@@ -3634,15 +3634,26 @@ alias to: process.executable
 None
 
 
-*`counter`*::
+*`name`*::
 +
 --
-type: long
+type: text
 
 required: True
 
-PLEASE UPDATE DOCUMENTATION
+--
 
+*`query`*::
++
+--
+type: text
+
+--
+
+*`tweet_volume`*::
++
+--
+type: long
 
 --
 
