@@ -10,5 +10,5 @@ type Config struct {
 }
 
 var DefaultConfig = Config{
-	Period: 1 * time.Second,
+	Period: 15 * time.Second,
 }
