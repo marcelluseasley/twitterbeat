@@ -1,13 +1,14 @@
 package beater
 
 import (
-	"fmt"
-	"time"
-	"net/http"
 	"encoding/json"
+	"fmt"
 	"log"
-	"os"
+	"net/http"
+	"net/url"
+	"time"
 
+	"io/ioutil"
 
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
@@ -40,7 +41,6 @@ type TwitterTrend []struct {
 	} `json:"locations"`
 }
 
-
 // New creates an instance of twitterbeat.
 func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	c := config.DefaultConfig
@@ -59,6 +59,8 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Twitterbeat) Run(b *beat.Beat) error {
 	logp.Info("twitterbeat is running! Hit CTRL-C to stop it.")
 
+	tt := bt.getTrends()
+
 	var err error
 	bt.client, err = b.Publisher.Connect()
 	if err != nil {
@@ -66,24 +68,34 @@ func (bt *Twitterbeat) Run(b *beat.Beat) error {
 	}
 
 	ticker := time.NewTicker(bt.config.Period)
-	counter := 1
+
 	for {
 		select {
 		case <-bt.done:
 			return nil
 		case <-ticker.C:
 		}
+		for _, trend := range tt[0].Trends {
 
-		event := beat.Event{
-			Timestamp: time.Now(),
-			Fields: common.MapStr{
-				"type":    b.Info.Name,
-				"counter": counter,
-			},
+			decodedQuery, err := url.QueryUnescape(trend.Query)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			event := beat.Event{
+				Timestamp: tt[0].CreatedAt, //time.Now(),
+				Fields: common.MapStr{
+					"type": b.Info.Name,
+					"name": trend.Name,
+					//"url":  decodedURL,
+					"query":        decodedQuery,
+					"tweet_volume": trend.TweetVolume,
+				},
+			}
+			bt.client.Publish(event)
+			logp.Info("Event sent")
 		}
-		bt.client.Publish(event)
-		logp.Info("Event sent")
-		counter++
+
 	}
 }
 
@@ -93,9 +105,8 @@ func (bt *Twitterbeat) Stop() {
 	close(bt.done)
 }
 
-
 //
-func getTrendingTweet () {
+func (bt *Twitterbeat) getTrends() TwitterTrend {
 	trendsPlaceURL := "https://api.twitter.com/1.1/trends/place.json?id=23424977"
 
 	client := &http.Client{}
@@ -104,6 +115,17 @@ func getTrendingTweet () {
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.Header.Add("Authorization", os.Getenv(BEARER_TOKEN))
+	req.Header.Add("Authorization", bt.config.BearerToken)
 	resp, err := client.Do(req)
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	var jsonBlob = body
+	var ttrend TwitterTrend
+	err = json.Unmarshal(jsonBlob, &ttrend)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return ttrend
+
 }
