@@ -2,8 +2,10 @@
   title: twitterbeat
   description:
   fields:
-    - name: trends
-      type: long
+    - name: name
+      type: text
       required: true
-      description: >
-        PLEASE UPDATE DOCUMENTATION
+    - name: query
+      type: text
+    - name: tweet_volume
+      type: long
