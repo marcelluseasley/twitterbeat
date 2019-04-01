@@ -4,6 +4,14 @@ Welcome to Twitterbeat.
 
 This beat gets the top 50 searches/hashtags.
 
+See the below example of the beats result as a Kibana dashboard, using a pie chart visualization organized by volume of tweets, followed by name of query (or search term).
+
+![Kibana Discover](images/kibana_discover_twitterbeat_marcellus_easley.png "Kibana Discover")
+
+![Kibana Dashboard](images/kibana_dashboard_twitterbeat_marcellus_easley.png "Kibana Discover")
+
+To use the Twitterbeat Beat, it is necessary to get Twitter application credentials, and store your resulting Bearer token as the BEARER_TOKEN environment variable. Of course, you can change this environment name in the configuration.
+
 Ensure that this folder is at the following location:
 `${GOPATH}/src/github.com/marcelluseasley/twitterbeat`
 
