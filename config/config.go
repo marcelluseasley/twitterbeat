@@ -7,8 +7,10 @@ import "time"
 
 type Config struct {
 	Period time.Duration `config:"period"`
+	BearerToken string `config:"bearer_token"`
 }
 
 var DefaultConfig = Config{
 	Period: 15 * time.Second,
+	BearerToken: "",
 }
