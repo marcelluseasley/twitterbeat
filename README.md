@@ -2,6 +2,8 @@
 
 Welcome to Twitterbeat.
 
+This beat gets the top 50 searches/hashtags.
+
 Ensure that this folder is at the following location:
 `${GOPATH}/src/github.com/marcelluseasley/twitterbeat`
 
